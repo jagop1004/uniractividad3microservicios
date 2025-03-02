@@ -1,5 +1,43 @@
 services:
+  eureka:
+    container_name: eureka
+    build: 
+      context: ./eureka
+      dockerfile: Dockerfile
+    ports:
+      - '8761:8761'
+    networks:
+      - eureka
+  gateway:
+    container_name: gateway
+    build: 
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - '8762:8762'
+    networks:
+      - eureka
+  operator:
+    container_name: operator
+    build: 
+      context: ./operator
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8081'
+    networks:
+      - eureka
+      - postgres
+  search_movies:
+    container_name: search_movies
+    build: 
+      context: ./search-movies
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    networks:
+      - eureka
   postgres:
+    container_name: postgres
     image: 'postgres:latest'
     environment:
       - 'POSTGRES_DB=mydatabase'
@@ -7,6 +45,8 @@ services:
       - 'POSTGRES_USER=myuser'
     ports:
       - '5432'
+    networks:
+      - postgres
   pgadmin:
     image: dpage/pgadmin4:latest
     environment:
@@ -15,3 +55,9 @@ services:
       PGADMIN_LISTEN_PORT: 5050
     ports:
       - '5050:5050'
+networks:
+  postgres:
+    driver: bridge
+  eureka:
+    driver: bridge
+  
